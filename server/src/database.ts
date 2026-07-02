@@ -6,4 +6,4 @@ export const prisma = new PrismaClient({
     adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL!})
 })
 
-export const redis = createClient()
+export const redis = createClient({url: "redis://localhost:8080"})

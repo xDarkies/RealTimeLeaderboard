@@ -38,6 +38,7 @@ io.on('connection', async socket => {
         await redis.zAdd("scores",[{score: score.score, value: score.user.username}])
         leaderboard.push({rank: i++, score: score.score, username: score.user.username})
     }
+    socket.emit("leaderboard", leaderboard)
 
     socket.on('submit-score', async (data: UserScore) => {
         await redis.zAdd("scores",[{score: data.score, value: data.user}])
