@@ -63,9 +63,19 @@ export const Login = async (req: Request, res: Response) => {
             maxAge: 3600 * 1000
         })
 
-        return res.status(200).json("User logged in")
+        return res.status(200).json( { message: "User logged in" } )
     }catch(error){
         console.error("Error",error)
         res.status(500).json({message: "Internal server error"})
     }
+}
+
+export const Logout = async (req: Request, res: Response) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+    })
+
+    return res.status(200).json( { message: "User logged out" } )
 }
