@@ -23,9 +23,14 @@ export const Signup = async (req: Request, res: Response) => {
 
     const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET!, {expiresIn: "1h"})
 
-    return res.status(201).json({user: {
-        id: user.id, username: user.username, email: user.email
-    }, access_token: token})
+    res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        maxAge: 3600 * 1000
+    })
+
+    return res.status(201).json({user: {id: user.id, username: user.username, email: user.email}})
     }catch(error){
         console.error("Error", error)
         res.status(500).json({message: "Internal server error"})
@@ -51,7 +56,14 @@ export const Login = async (req: Request, res: Response) => {
 
         const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET!, {expiresIn: "1h"})
 
-        return res.status(200).json({access_token: token})
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: true,
+            maxAge: 3600 * 1000
+        })
+
+        return res.status(200).json("User logged in")
     }catch(error){
         console.error("Error",error)
         res.status(500).json({message: "Internal server error"})

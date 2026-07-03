@@ -2,10 +2,12 @@ import {createServer} from "node:http"
 import {Server} from "socket.io"
 import express from "express"
 import cors from "cors"
+import jwt from "jsonwebtoken"
 import AuthRouter from "./auth/auth.routes.js"
 import type UserScore from "./types/userScore.js"
 import type userScore from "./types/userScore.js"
 import { redis, prisma } from "./database.js"
+import { parseCookie } from "cookie"
 
 const app = express()
 app.use(express.json())
@@ -22,6 +24,22 @@ app.use("/api/auth", AuthRouter)
 
 
 io.on('connection', async socket => {
+
+    const cookieString = socket.handshake.headers.cookie ?? '';
+    const cookies = parseCookie(cookieString)
+    const authToken = cookies.token ?? null
+
+    if(!authToken){
+        socket.disconnect();
+        return;
+    }
+    try{
+        const decoded = jwt.verify(authToken, process.env.JWT_SECRET!)
+    }catch(error){
+        socket.disconnect()
+        return
+    }
+
     console.log('User connected to server')
     let scores = await prisma.score.findMany({
         take: 15,
