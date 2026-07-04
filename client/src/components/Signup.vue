@@ -32,7 +32,7 @@
             </div>
         </div>
         <div id="btn">
-            <button @click="signup(username.valueOf(),email.valueOf(),password.valueOf(), rpassword.valueOf())" class="btn-secondary">Sign up</button>
+            <button :disabled="password.valueOf() != rpassword.valueOf() || false" @click="signup(username.valueOf(),email.valueOf(),password.valueOf(), rpassword.valueOf())" class="btn-secondary">Sign up</button>
         </div>
     </section>
 </template>

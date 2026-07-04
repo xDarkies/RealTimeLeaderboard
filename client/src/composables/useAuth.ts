@@ -8,6 +8,24 @@ export function useAuth(){
 
     async function signup(username: string, email: string, password: string, rpassword: string){
         try{
+
+            const usernameRegex = /^[0-9A-Za-z]{6,16}$/
+            const emailRegex =/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+            if(password != rpassword){
+                return { success: false, error: "Passwords are not the same" };
+            }
+            if(!usernameRegex.test(username)){
+                return { success: false, error: "Username must be between 6 and 16 characters" };
+            }
+            if(!emailRegex.test(email)){
+                return { success: false, error: "Email must be in email format" };
+            }
+            if(!passwordRegex.test(password)){
+                return { success: false, error: "Password must be atlest 8 characters long and contain one uppercase letter, one number and one special character" };
+            }
+
             const response = await fetch("http://localhost:3000/api/auth/signup", {
                 method: "POST",
                 headers: {
