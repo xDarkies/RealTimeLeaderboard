@@ -1,12 +1,12 @@
 import { ref, computed} from "vue"
 
-const User = ref<any | null>(null)
+const User = ref<any | null>()
 
 export function useAuth(){
 
-    const isLoggedIn = computed(()=> User != null)
+    const isLoggedIn = computed(()=> User.value != null)
 
-    async function signup(username: string, email: string, password: string){
+    async function signup(username: string, email: string, password: string, rpassword: string){
         try{
             const response = await fetch("http://localhost:3000/api/auth/signup", {
                 method: "POST",

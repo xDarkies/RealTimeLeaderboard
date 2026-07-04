@@ -1,18 +1,18 @@
 <script setup lang="ts">
-    import io from "socket.io-client"
+    import Auth from './components/Auth.vue';
+    import Leaderboard from './components/Leaderboard.vue';
+    import { useAuth } from './composables/useAuth';
 
-    const client = io("ws://localhost:3000")
-
-    client.on("connect", () => {
-      console.log("Connected to server")
-    })
-
-    client.on("leaderboard", (data) => {
-      console.log(data)
-    })
+    const {isLoggedIn} = useAuth()
 </script>
 
 <template>
+  <div v-if="!isLoggedIn.valueOf()">
+    <Auth />
+  </div>
+  <div v-else>
+    <Leaderboard />
+  </div>
 </template>
 
 <style scoped>

@@ -1,3 +1,27 @@
 @import './base.css';
 
+*{
+    color: #1A1A1A
+}
 
+body{
+    background: #04022b;
+    background: linear-gradient(23deg, rgba(4, 2, 43, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(7, 58, 153, 1) 70%, rgba(16, 137, 161, 1) 100%);
+}
+
+.btn-primary {
+    background-color: #edf0f0;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+.btn-secondary {
+    background-color: #13D4D4;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: #F2FAFF;
+}
