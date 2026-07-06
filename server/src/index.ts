@@ -1,21 +1,35 @@
 import {createServer} from "node:http"
 import {Server} from "socket.io"
-import express from "express"
+import express, { raw } from "express"
 import cors from "cors"
 import jwt from "jsonwebtoken"
+import cookieParser from "cookie-parser"
 import AuthRouter from "./auth/auth.routes.js"
 import type UserScore from "./types/userScore.js"
-import type userScore from "./types/userScore.js"
 import { redis, prisma } from "./database.js"
 import { parseCookie } from "cookie"
 
+const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+            return
+        }
+
+        callback(new Error("Not allowed by CORS"))
+    },
+    credentials: true
+}))
 
 const server = createServer(app)
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -23,23 +37,37 @@ const io = new Server(server, {
 
 app.use("/api/auth", AuthRouter)
 
+io.use((socket, next) => {
+    try {
+    const rawCookies = socket.handshake.headers.cookie;
+
+    if (!rawCookies) {
+      return next(new Error("Authentication error: No cookies found"));
+    }
+    const cookies = parseCookie(rawCookies);
+    const token = cookies.token; 
+
+    if (!token) {
+      return next(new Error("Authentication error: Token missing"));
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET!, (err, decoded: any) => {
+      if (err) {
+        return next(new Error("Authentication error: Invalid token"));
+      }
+
+      socket.data.userId = decoded.userId;
+      socket.data.username = decoded.username;
+      
+      next();
+    });
+
+  } catch (error) {
+    return next(new Error("Authentication error: Internal validation failure"));
+  }
+})
 
 io.on('connection', async socket => {
-
-    const cookieString = socket.handshake.headers.cookie ?? '';
-    const cookies = parseCookie(cookieString)
-    const authToken = cookies.token ?? null
-
-    if(!authToken){
-        socket.disconnect();
-        return;
-    }
-    try{
-        const decoded = jwt.verify(authToken, process.env.JWT_SECRET!)
-    }catch(error){
-        socket.disconnect()
-        return
-    }
 
     console.log('User connected to server')
     let scores = await prisma.score.findMany({

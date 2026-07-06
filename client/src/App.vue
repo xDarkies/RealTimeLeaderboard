@@ -3,7 +3,8 @@
     import Leaderboard from './components/Leaderboard.vue';
     import { useAuth } from './composables/useAuth';
 
-    const {isLoggedIn} = useAuth()
+    const {isLoggedIn, authMe} = useAuth()
+    authMe()
 </script>
 
 <template>

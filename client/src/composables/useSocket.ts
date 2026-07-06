@@ -13,7 +13,9 @@ const isConnected = ref(false)
 
 export function useSocket() {
     if(!socket){
-        socket = io("ws://localhost:3000")
+        socket = io("ws://localhost:3000", {
+            withCredentials: true
+        })
 
         socket.on("connect", () => {
             isConnected.value = true;

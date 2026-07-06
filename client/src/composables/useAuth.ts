@@ -26,8 +26,9 @@ export function useAuth(){
                 return { success: false, error: "Password must be atlest 8 characters long and contain one uppercase letter, one number and one special character" };
             }
 
-            const response = await fetch("http://localhost:3000/api/auth/signup", {
+            const response = await fetch("/api/auth/signup", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -38,14 +39,14 @@ export function useAuth(){
                 })
             })
 
-            const data = await response.json()
+            const data = await response.json().catch(() => ({}))
 
             if(!response.ok)
-                throw new Error(data.error || "Signup failed")
+                throw new Error(data.error || data.message || "Signup failed")
 
             User.value = data.user;
 
-            return { success: true }; 
+            return { success: true, user: data.user }; 
         }catch(error: any){
             return { success: false, error: error.message };
         }
@@ -53,8 +54,9 @@ export function useAuth(){
 
     async function login(email: string, password: string){
         try{
-            const response = await fetch("http://localhost:3000/api/auth/signup", {
+            const response = await fetch("/api/auth/login", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -64,10 +66,10 @@ export function useAuth(){
                 })
             })
 
-            const data = await response.json()
+            const data = await response.json().catch(() => ({}))
 
             if(!response.ok)
-                throw new Error(data.error || "Login failed")
+                throw new Error(data.error || data.message || "Login failed")
 
             User.value = data.user;
 
@@ -79,16 +81,38 @@ export function useAuth(){
 
     async function logout() {
         try{
-            const response = await fetch("http://localhost:3000/api/auth/logout", {
-                method: "POST"
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "include"
             })
 
-            const data = await response.json()
+            const data = await response.json().catch(() => ({}))
 
             if(!response.ok)
-                throw new Error(data.error || "Logout failed")
+                throw new Error(data.error || data.message || "Logout failed")
 
             User.value = null;
+            
+            return { success: true }
+
+        }catch(error: any){
+            return { success: false, error: error.message };
+        }
+    }
+
+    async function authMe() {
+        try{
+            const response = await fetch("/api/auth/me", {
+                method: "GET",
+                credentials: "include"
+            })
+
+            const data = await response.json().catch(() => ({}))
+            console.log(data)
+            if(!response.ok)
+                throw new Error(data.error || data.message || "Logout failed")
+
+            User.value = data.user;
             
             return { success: true }
 
@@ -102,6 +126,7 @@ export function useAuth(){
         isLoggedIn,
         signup,
         login,
-        logout
+        logout,
+        authMe
     }
 }
