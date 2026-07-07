@@ -88,14 +88,13 @@ io.on('connection', async socket => {
     socket.emit("leaderboard", leaderboard)
 
     socket.on('submit-score', async (data: UserScore) => {
-        await redis.zAdd("scores",[{score: data.score, value: data.user}])
+        await redis.zAdd("scores",[{score: data.score, value: data.username}])
         const length = await redis.ZCOUNT("scores",0,"inf")
         if(length > 15) await redis.zPopMin("scores")
-
-        const user = await prisma.user.findUnique({where: {username: data.user}})
+        const user = await prisma.user.findUnique({where: {username: data.username}})
 
         if(!user)
-            return socket.emit("No user found")
+            return socket.emit("error","No user found")
 
         await prisma.score.create({
             data: {

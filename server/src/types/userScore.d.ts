@@ -1,5 +1,5 @@
 type userScore = {
-    user: string,
+    username: string,
     score: number,
     game: string
 }

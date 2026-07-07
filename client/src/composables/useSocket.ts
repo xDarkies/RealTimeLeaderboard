@@ -1,6 +1,8 @@
 import { ref, onMounted, onUnmounted} from "vue"
 import {io, type Socket}  from "socket.io-client"
+import { useAuth } from "./useAuth"
 
+const { User } = useAuth()
 type Leaderboard = {
     rank: number,
     username: string,
@@ -28,11 +30,18 @@ export function useSocket() {
         socket.on("leaderboard", (data: Leaderboard[]) => {
             leaderboard.value = data;
         })
+        
+    }
+    const submitScore = ( score: number) => {
+        const username = User.value.username;
+        if(!username) return
+        socket?.emit("submit-score", {username, score, game: ""})
     }
 
     return {
         socket,
         leaderboard,
-        isConnected
+        isConnected,
+        submitScore
     }
 }
