@@ -1,15 +1,17 @@
 <script setup lang="ts">
     import { ref, computed } from "vue" 
     import { useSocket } from '@/composables/useSocket';
+    import { useAuth } from "@/composables/useAuth.ts";
     import SubmitScoreForm from './submitScoreForm.vue';
     const {leaderboard, isConnected} = useSocket()
+    const { logout } = useAuth()
     const submitScoreFormVisible = ref(false)
     const changeSSFVisibility = () => submitScoreFormVisible.value = !submitScoreFormVisible.value;
     const leaderboardSize = computed(()=>leaderboard.value.length)
 </script>
 
 <template>
-    <button class="btn-primary" @click="changeSSFVisibility">
+    <button class="btn-primary btnSubmit" @click="changeSSFVisibility">
         Submit score
     </button>
     <section>
@@ -31,12 +33,19 @@
     <div v-if="submitScoreFormVisible">
         <SubmitScoreForm @close-form="changeSSFVisibility"/>
     </div>
-
+      <button class="btn-secondary btnLogout" @click="logout">
+        Log out  <i class="fa fa-sign-out" aria-hidden="true"></i>
+    </button>
 </template>
 
 <style lang="css" scoped>
-    button {
+    .btnSubmit {
         margin: 30px 50px;
+    }
+    .btnLogout {
+        position: absolute;
+        top: 30px;
+        right: 30px;
     }
     section {
         width: 70%;

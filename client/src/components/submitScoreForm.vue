@@ -15,11 +15,13 @@
     <section>
         <form @submit.prevent="OnSubmit">
             <h1>Username: <span class="highlight"> {{ User.valueOf().username }} </span></h1>
-            <label for="score">Score: </label>
-            <input type="number" id="score" name="score" v-model="score" placeholder="Enter your score" min="0">
-            <button type="submit" class="btn-secondary">Submit</button>
+            <div id="inputs">
+                <label for="score">Score: </label>
+                <input type="number" id="score" name="score" v-model="score" placeholder="Enter your score" min="0">
+                <button type="submit" class="btn-secondary">Submit</button>
+            </div>
         </form>
-        <button id="btnClose" class="btn-primary" @click="$emit('close-form')">X</button>
+        <button id="btnClose" class="btn-primary" @click="$emit('close-form')"><i class="fa fa-times" aria-hidden="true"></i></button>
     </section>
 </template>
 
@@ -33,7 +35,7 @@
         background: rgba(255, 255, 255, 0.62);
         border-radius: 16px;
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(5px);
         border: 5px solid rgba(255, 255, 255, 0.3);
         padding: 40px 50px
@@ -46,16 +48,21 @@
     h1{
         font-weight: 600;
         text-align: center;
+        color: #B9D3E0;
     }
     label{
         font-weight: 600;
     }
     .highlight{
-        color: #252525;
+        color: #B9D3E0;
     }
     #btnClose{
         position: absolute;
         top: 10px;
         right: 10px
+    }
+    #inputs {
+        width: 60%;
+        margin: 0 auto;
     }
 </style>
