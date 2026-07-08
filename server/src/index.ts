@@ -73,16 +73,25 @@ io.on('connection', async socket => {
 
     console.log('User connected to server')
     let scores = await prisma.score.findMany({
-        take: 10,
         orderBy: {
             score: "desc"
         },
         include: {user: true}
     })
 
+    const seenUsers = new Set();
+    let uniqueScores = [];
+    for (const score of scores) {
+        if (!seenUsers.has(score.userId)) {
+            seenUsers.add(score.userId);
+            uniqueScores.push(score);
+            if (uniqueScores.length === 10) break;
+        }
+    }
+
     let leaderboard = [];
     let i = 1;
-    for(const score of scores){
+    for(const score of uniqueScores){
         await redis.zAdd("scores",[{score: score.score, value: score.user.username}])
         leaderboard.push({rank: i++, score: score.score, username: score.user.username})
     }
