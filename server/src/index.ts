@@ -73,7 +73,7 @@ io.on('connection', async socket => {
 
     console.log('User connected to server')
     let scores = await prisma.score.findMany({
-        take: 15,
+        take: 10,
         orderBy: {
             score: "desc"
         },
@@ -91,7 +91,7 @@ io.on('connection', async socket => {
     socket.on('submit-score', async (data: UserScore) => {
         await redis.zAdd("scores",[{score: data.score, value: data.username}])
         const length = await redis.ZCOUNT("scores",0,"inf")
-        if(length > 15) await redis.zPopMin("scores")
+        if(length > 10) await redis.zPopMin("scores")
         const user = await prisma.user.findUnique({where: {username: data.username}})
 
         if(!user)
