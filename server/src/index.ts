@@ -28,6 +28,8 @@ app.use(cors({
 
 const server = createServer(app)
 const io = new Server(server, {
+    pingTimeout: 5000,
+    pingInterval: 10000,
     cors: {
         origin: allowedOrigins,
         methods: ["GET", "POST"],
@@ -78,7 +80,6 @@ io.on('connection', async socket => {
         include: {user: true}
     })
 
-    await redis.connect();
     let leaderboard = [];
     let i = 1;
     for(const score of scores){
@@ -112,11 +113,22 @@ io.on('connection', async socket => {
         io.emit("leaderboard", leaderboard)
     })
 
-})
-
-io.on("disconnect", async () => await redis.quit())
+});
 
 
-server.listen(3000, () => {
-    console.log('Server listening on port 3000')
-})
+(async () => {
+    try{
+        await redis.connect()
+        server.listen(3000, () => {
+            console.log('Server listening on port 3000')
+        });
+    }catch(err){
+        console.error('Redis connection failed')
+        process.exit(1)
+    }
+})()
+
+process.on('SIGINT', async () => {
+  await redis.quit();
+  process.exit();
+});
