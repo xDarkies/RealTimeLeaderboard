@@ -114,7 +114,7 @@ io.on('connection', async socket => {
         })
 
         leaderboard = [];
-        const scores = await redis.zRange("scores", 0, -1)
+        const scores = await redis.zRange("scores", 0, -1, {REV: true})
         let i = 1;
         for(const score of scores){
             leaderboard.push({rank: i++, score: await redis.zScore("scores", score) || 0, username: score})
