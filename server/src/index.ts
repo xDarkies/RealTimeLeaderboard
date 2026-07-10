@@ -109,7 +109,8 @@ io.on('connection', async socket => {
         await prisma.score.create({
             data: {
                 userId: user.id,
-                score: data.score
+                score: data.score,
+                game: data.game
             }
         })
 

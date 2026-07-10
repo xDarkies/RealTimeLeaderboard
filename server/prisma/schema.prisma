@@ -27,6 +27,7 @@ model Score {
   user   User   @relation(fields: [userId], references: [id])
   userId String
   score  Int
+  game String 
 
   @@map("scores")
 }
