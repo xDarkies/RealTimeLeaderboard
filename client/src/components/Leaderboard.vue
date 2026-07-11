@@ -29,13 +29,13 @@
         <h1>Leaderboard</h1>
         <nav>
             <button @click="changeGame(-1)" class="btnArrows">
-                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                <i class="fa fa-arrow-left" aria-hidden="true" style="color: #B9D3E0;"></i>
             </button>
             <text>
                 {{ games[game] }}
             </text>
             <button @click="changeGame(1)" class="btnArrows">
-                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                <i class="fa fa-arrow-right" aria-hidden="true" style="color: #B9D3E0;"></i>
             </button>
         </nav>
         <ol>
