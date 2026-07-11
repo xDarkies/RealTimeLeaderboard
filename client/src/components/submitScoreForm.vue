@@ -5,9 +5,10 @@
     const {User} = useAuth()
     const {submitScore} = useSocket()
     const score = ref(0)
+    const game = ref('Tetris')
 
     const OnSubmit = () => {
-        submitScore(score.value)
+        submitScore(score.value, game.value)
     }
 </script>
 
@@ -18,6 +19,11 @@
             <div id="inputs">
                 <label for="score">Score: </label>
                 <input type="number" id="score" name="score" v-model="score" placeholder="Enter your score" min="0">
+                <select v-model="game">
+                    <option value="Tetris">Tetris</option>
+                    <option value="Pacman">Pacman</option>
+                    <option value="Skate">Skate</option>
+                </select>
                 <button type="submit" class="btn-secondary">Submit</button>
             </div>
         </form>
@@ -40,10 +46,10 @@
         border: 5px solid rgba(255, 255, 255, 0.3);
         padding: 40px 50px
     }
-    input{
+    input, select{
         border-radius: 10px;
         padding: 5px;
-        margin: 10px;
+        margin: 5px;
     }
     h1{
         font-weight: 600;
@@ -62,7 +68,7 @@
         right: 10px
     }
     #inputs {
-        width: 60%;
+        width: 85%;
         margin: 0 auto;
     }
 </style>

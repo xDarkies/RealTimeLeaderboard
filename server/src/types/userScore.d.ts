@@ -1,7 +1,9 @@
+type GameCategory = 'Tetris' | 'Pacman' | 'Skate'
+
 type userScore = {
     username: string,
     score: number,
-    game: string
+    game: GameCategory
 }
 
 export default userScore

@@ -10,8 +10,9 @@ type Leaderboard = {
 }
 
 let socket: Socket | null = null
-const leaderboard = ref<Leaderboard[]>([])
+const leaderboard = ref<[Leaderboard[],Leaderboard[],Leaderboard[]]>([[],[],[]])
 const isConnected = ref(false)
+const games = ['Tetris', 'Pacman', 'Skate']
 
 export function useSocket() {
     if(!socket){
@@ -27,21 +28,31 @@ export function useSocket() {
             isConnected.value = false;
         })
 
-        socket.on("leaderboard", (data: Leaderboard[]) => {
-            leaderboard.value = data;
+        socket.on("leaderboardTetris", (data: Leaderboard[]) => {
+            leaderboard.value[0] = data || [];
+        })
+
+        socket.on('leaderboardPacman', (data: Leaderboard[]) => {
+            leaderboard.value[1] = data || []
+        })
+
+        socket.on('leaderboardSkate', (data: Leaderboard[]) => {
+            leaderboard.value[2] = data || []
         })
         
+        
     }
-    const submitScore = ( score: number) => {
+    const submitScore = (score: number, game: string) => {
         const username = User.value.username;
         if(!username) return
-        socket?.emit("submit-score", {username, score, game: ""})
+        socket?.emit("submit-score", {username, score, game})
     }
 
     return {
         socket,
         leaderboard,
         isConnected,
-        submitScore
+        submitScore,
+        games
     }
 }
