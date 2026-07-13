@@ -1,20 +1,30 @@
 <script setup lang="ts">
-    import Auth from './components/Auth.vue';
-    import Leaderboard from './components/Leaderboard.vue';
-    import { useAuth } from './composables/useAuth';
+    import { onMounted } from 'vue'
+    import Auth from './components/Auth.vue'
+    import Leaderboard from './components/Leaderboard.vue'
+    import Sidebar from './components/Sidebar.vue'
+    import { useAuth } from './composables/useAuth'
 
-    const {isLoggedIn, authMe} = useAuth()
-    authMe()
+    const { isLoggedIn, isLoading, authMe } = useAuth()
+
+    onMounted(() => {
+        authMe()
+    })
 </script>
 
 <template>
-  <div v-if="!isLoggedIn.valueOf()">
+  <div v-if="isLoading">Checking session...</div>
+  <div v-else-if="!isLoggedIn">
     <Auth />
   </div>
-  <div v-else>
+  <main v-else>
+    <Sidebar />
     <Leaderboard />
-  </div>
+  </main>
 </template>
 
 <style scoped>
+   main {
+    display: flex;
+   }
 </style>

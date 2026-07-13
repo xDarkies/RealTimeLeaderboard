@@ -1,30 +1,42 @@
 <script setup lang="ts">
     import { ref } from "vue"
-    import { useAuth } from '@/composables/useAuth';
+    import { useAuth } from '@/composables/useAuth'
 
     const { login } = useAuth()
 
     const email = ref("")
     const password = ref("")
+    const errorMessage = ref<string | null>(null)
 
+    const handleSubmit = async () => {
+        errorMessage.value = null
+        const result = await login(email.value, password.value)
+
+        if (!result.success) {
+            errorMessage.value = result.error ?? "Login failed"
+        }
+    }
 </script>
 
 <template>
     <section>
         <h1>Sign in</h1>
-        <div style="display: flex; gap: 20px;">
-            <div>
-                <label for="email">Email: </label><br>
-                <label for="password">Password: </label>
+        <form @submit.prevent="handleSubmit">
+            <div style="display: flex; gap: 20px;">
+                <div>
+                    <label for="email">Email: </label><br>
+                    <label for="password">Password: </label>
+                </div>
+                <div>
+                    <input id="email" type="email" placeholder="Enter email" v-model="email">
+                    <input id="password" type="password" placeholder="Enter password" v-model="password">
+                </div>
             </div>
-            <div>
-                <input id="email" type="input" placeholder="Enter email" v-model="email">
-                <input id="password" type="password" placeholder="Enter password" v-model="password">
+            <p v-if="errorMessage" class="message error">{{ errorMessage }}</p>
+            <div id="btn">
+                <button type="submit" class="btn-primary">Sign in</button>
             </div>
-        </div>
-        <div id="btn">
-            <button @click="login(email.valueOf(),password.valueOf())" class="btn-primary">Sign in</button>
-        </div>
+        </form>
     </section>
 </template>
 
@@ -74,6 +86,16 @@
         display: flex;
         margin: 50px 0;
         justify-content: center;
+    }
+
+    .message {
+        margin-top: 1rem;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .error {
+        color: #c62828;
     }
 
 </style>

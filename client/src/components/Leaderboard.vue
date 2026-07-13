@@ -1,16 +1,11 @@
 <script setup lang="ts">
     import { ref, computed } from "vue" 
     import { useSocket } from '@/composables/useSocket';
-    import { useAuth } from "@/composables/useAuth.ts";
-    import SubmitScoreForm from './submitScoreForm.vue';
     const {leaderboard, isConnected, games} = useSocket()
-    const { logout } = useAuth()
     const submitScoreFormVisible = ref(false)
     const changeSSFVisibility = () => submitScoreFormVisible.value = !submitScoreFormVisible.value;
     const game = ref(0)
     const leaderboardSize = computed(()=> (leaderboard.value?.[game.value]?.length) ?? 0)
-
-    console.log(leaderboard.value)
 
     const changeGame = (inc: number) => {
         game.value += inc
@@ -22,9 +17,6 @@
 </script>
 
 <template>
-    <button class="btn-primary btnSubmit" @click="changeSSFVisibility">
-        Submit score
-    </button>
     <section>
         <h1>Leaderboard</h1>
         <nav>
@@ -52,30 +44,17 @@
             </template>
         </ol>
     </section>
-    <div v-if="submitScoreFormVisible">
-        <SubmitScoreForm @close-form="changeSSFVisibility"/>
-    </div>
-      <button class="btn-secondary btnLogout" @click="logout">
-        Log out  <i class="fa fa-sign-out" aria-hidden="true"></i>
-    </button>
 </template>
 
 <style lang="css" scoped>
-    .btnSubmit {
-        margin: 30px 50px;
-    }
-    .btnLogout {
-        position: absolute;
-        top: 30px;
-        right: 30px;
-    }
     section {
         width: 70%;
         border-radius: 30px;
         background: #221ba1;
         background: linear-gradient(228deg, rgba(34, 27, 161, 1) 0%, rgba(28, 28, 212, 1) 35%, rgba(28, 92, 212, 1) 70%, rgba(22, 186, 219, 1) 100%);
         padding: 10px 30px 20px 30px;
-        margin: 0 auto;
+        margin: 15px 50px;
+        height: 95vh;
     }
     h1 {
        text-align: center; 

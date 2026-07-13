@@ -1,21 +1,31 @@
 <script setup lang="ts">
-    import {ref} from "vue"
-    import { useAuth } from "@/composables/useAuth";
-    import { useSocket } from "@/composables/useSocket";
-    const {User} = useAuth()
-    const {submitScore} = useSocket()
+    import { ref } from "vue"
+    import { useAuth } from "@/composables/useAuth"
+    import { useSocket } from "@/composables/useSocket"
+
+    const { User } = useAuth()
+    const { submitScore } = useSocket()
     const score = ref(0)
-    const game = ref('Tetris')
+    const game = ref("Tetris")
+    const statusMessage = ref<string | null>(null)
 
     const OnSubmit = () => {
-        submitScore(score.value, game.value)
+        const numericScore = Number(score.value)
+
+        if (!Number.isFinite(numericScore) || numericScore < 0) {
+            statusMessage.value = "Please enter a valid score"
+            return
+        }
+
+        submitScore(numericScore, game.value)
+        statusMessage.value = "Score submitted"
     }
 </script>
 
 <template>
     <section>
         <form @submit.prevent="OnSubmit">
-            <h1>Username: <span class="highlight"> {{ User.valueOf().username }} </span></h1>
+            <h1>Username: <span class="highlight"> {{ User?.username ?? 'Guest' }} </span></h1>
             <div id="inputs">
                 <label for="score">Score: </label>
                 <input type="number" id="score" name="score" v-model="score" placeholder="Enter your score" min="0">
@@ -26,49 +36,44 @@
                 </select>
                 <button type="submit" class="btn-secondary">Submit</button>
             </div>
+            <p v-if="statusMessage" class="message">{{ statusMessage }}</p>
         </form>
-        <button id="btnClose" class="btn-primary" @click="$emit('close-form')"><i class="fa fa-times" aria-hidden="true"></i></button>
     </section>
 </template>
 
 <style lang="css" scoped>
     section{
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        /* From https://css.glass */
-        background: rgba(255, 255, 255, 0.62);
-        border-radius: 16px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(5px);
-        border: 5px solid rgba(255, 255, 255, 0.3);
-        padding: 40px 50px
+        width: 100%;
+        height: 100%;
     }
     input, select{
         border-radius: 10px;
         padding: 5px;
-        margin: 5px;
+        margin: 2px;
+        width: 100%;
     }
     h1{
         font-weight: 600;
         text-align: center;
-        color: #B9D3E0;
+        color: #d8e6ee;
     }
     label{
         font-weight: 600;
+        color: #d8e6ee;
     }
     .highlight{
-        color: #B9D3E0;
+        color: #d8e6ee;
+        font-weight: 700;
     }
-    #btnClose{
-        position: absolute;
-        top: 10px;
-        right: 10px
+    button {
+        width: 100%;
+        margin: 2px;
     }
-    #inputs {
-        width: 85%;
-        margin: 0 auto;
+
+    .message {
+        margin-top: 0.5rem;
+        color: #d8e6ee;
+        text-align: center;
+        font-size: 0.9rem;
     }
 </style>

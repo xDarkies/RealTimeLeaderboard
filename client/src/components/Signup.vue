@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { computed, ref } from "vue"
-    import { useAuth } from '@/composables/useAuth';
+    import { useAuth } from '@/composables/useAuth'
 
     const { signup } = useAuth()
 
@@ -8,32 +8,45 @@
     const email = ref("")
     const password = ref("")
     const rpassword = ref("")
+    const errorMessage = ref<string | null>(null)
 
     const isMatchingPasswordColor = computed(() => {
         return password.value === rpassword.value ? "white" : "red"
     })
+
+    const handleSubmit = async () => {
+        errorMessage.value = null
+        const result = await signup(username.value, email.value, password.value, rpassword.value)
+
+        if (!result.success) {
+            errorMessage.value = result.error ?? "Signup failed"
+        }
+    }
 </script>
 
 <template>
     <section>
         <h1>Sign up</h1>
-        <div style="display: flex; gap: 20px;">
-            <div>
-                <label for="username">Username: </label><br>
-                <label for="email">Email: </label><br>
-                <label for="password">Password: </label>
-                <label for="rpassword">Password: </label>
+        <form @submit.prevent="handleSubmit">
+            <div style="display: flex; gap: 20px;">
+                <div>
+                    <label for="username">Username: </label><br>
+                    <label for="email">Email: </label><br>
+                    <label for="password">Password: </label>
+                    <label for="rpassword">Password: </label>
+                </div>
+                <div>
+                    <input id="username" type="text" placeholder="Enter username" v-model="username">
+                    <input id="email" type="email" placeholder="Enter email" v-model="email">
+                    <input id="password" type="password" placeholder="Enter password" v-model="password">
+                    <input id="rpassword" type="password" placeholder="Repeat password" v-model="rpassword" :style="{ border: `1px solid ${isMatchingPasswordColor}` }">
+                </div>
             </div>
-            <div>
-                <input id="username" type="input" placeholder="Enter username" v-model="username">
-                <input id="email" type="input" placeholder="Enter email" v-model="email">
-                <input id="password" type="password" placeholder="Enter password" v-model="password">
-                <input id="rpassword" type="password" placeholder="Repeat password" v-model="rpassword" :style="{ border: `1px solid ${isMatchingPasswordColor}` }">
+            <p v-if="errorMessage" class="message error">{{ errorMessage }}</p>
+            <div id="btn">
+                <button type="submit" class="btn-secondary">Sign up</button>
             </div>
-        </div>
-        <div id="btn">
-            <button :disabled="password.valueOf() != rpassword.valueOf() || false" @click="signup(username.valueOf(),email.valueOf(),password.valueOf(), rpassword.valueOf())" class="btn-secondary">Sign up</button>
-        </div>
+        </form>
     </section>
 </template>
 
@@ -88,5 +101,15 @@
         display: flex;
         margin: 25px 0;
         justify-content: center;
+    }
+
+    .message {
+        margin-top: 1rem;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .error {
+        color: #c62828;
     }
 </style>
